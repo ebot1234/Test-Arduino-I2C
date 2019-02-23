@@ -8,16 +8,15 @@
 #include <frc/Joystick.h>
 #include <frc/DigitalInput.h>
 
+#define I2C_Slave_Id 0x08;
+
 using namespace frc;
 using namespace std;
 
 Robot::Robot() {
   
 }
-uint8_t leds[1];
-uint8_t arduino_data[1];
-
-frc::I2C arduino = {frc::I2C::Port::kOnboard, 2};
+frc::I2C I2Channel = {frc::I2C::Port::kOnboard, 2};
 frc::Joystick stick0{0};
 frc::DigitalInput limBot(0);
 
@@ -25,82 +24,46 @@ void Robot::RobotInit() {
   m_chooser.SetDefaultOption(kAutoNameDefault, kAutoNameDefault);
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
-
-  frc::wait(1000);
-  setLedsBeforeMatch();
 }
 
-void setLedsBeforeMatch(){
-//Sets the leds if FMS or DS is present and to the alliance color when robot is ready
-  if(frc::DriverStation::IsFMSAttached() == true || frc::DriverStation::IsDSAttached() == true){
-    if(frc::DriverStation::Alliance::kRed){
-      leds[0] = 1;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      std::cout << "Robot is connected and is red alliance\n" << endl;
-    }
-    else{
-      leds[0] = 9;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      std::cout << "Robot is connected and no alliance is selected\n";
-    }
-  }
-  if(frc::DriverStation::IsFMSAttached() == true ||frc::DriverStation::IsDSAttached() == true){
-    if(frc::DriverStation::Alliance::kBlue){
-      leds[0] = 2;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      std::cout << "Robot is connected and is blue alliance\n" << endl;
-    }
-    else{
-      leds[0] = 9;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      std::cout << "Robot is connected and no alliance is selected\n";
-    }
+void setLeds(int ledMode){
+  switch(ledMode){
+   case 0:
+		I2CWrite(111); // all off
+		break;
+	case 1:
+		I2CWrite(114); // wipe to red
+		break;
+	case 2:
+		I2CWrite(103); // wipe to green
+		break;
+	case 3:
+		I2CWrite(98); // wipe to blue
+		break;
+	case 4:
+		I2CWrite(117); // static rainbow
+		break;
+	case 5:
+		I2CWrite(99); // rainbow cycle
+		break;
+	case 6:
+		I2CWrite(104); // chase along with the color byte as defined in cases 0 - 2
+		break;
+	case 7:
+    I2CWrite(121);
+    break; // wipe to amber
   }
 }
 
-void setLedsDuringMatch(int mode){
-  switch(mode){
-    case 1:
-      leds[0] = 1;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      break;
-    case 2:
-      leds[0] = 2;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      break;
-    case 3:
-      leds[0] = 3;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      break;
-    case 4:
-      leds[0] = 4;
-      arduino.Transaction(leds, 1, NULL, NULL);
-      break;
-    case 5:
-      leds[0] = 5;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      break;
-    case 6:
-      leds[0] = 6;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      break;
-    case 7:
-      leds[0] = 7;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      break;
-    case 8:
-      leds[0] = 8;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      break;
-    case 9:
-      leds[0] = 9;
-      arduino.Transaction(leds, 1, arduino_data, 1);
-      break;
-  }
+//This function is for sending data through I2C
+void I2CWrite(uint8_t data){
+  I2Channel.Write(8, data);
+  //This should print out what was sent through I2C
+  std::cout << "Wrote:" << data << endl;
 }
 
 void Robot::Autonomous() {
- 
+  
 }
 
 
