@@ -17,8 +17,11 @@ Robot::Robot() {
   
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 frc::I2C I2Channel = {frc::I2C::Port::kOnboard, 2};
 =======
+=======
+>>>>>>> parent of b2ad690... added arduino data to store returned data from the arduino
 uint8_t leds;
 
 frc::I2C arduino = {frc::I2C::Port::kOnboard, 2};
