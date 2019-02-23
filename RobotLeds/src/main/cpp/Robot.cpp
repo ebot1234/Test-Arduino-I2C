@@ -25,6 +25,13 @@ void Robot::RobotInit() {
   m_chooser.AddOption(kAutoNameCustom, kAutoNameCustom);
   frc::SmartDashboard::PutData("Auto Modes", &m_chooser);
 }
+//This function is for sending data through I2C
+void I2CWrite(uint8_t data){
+  I2Channel.Write(8, data);
+  //This should print out what was sent through I2C
+  std::cout << "Wrote:" << data << endl;
+}
+
 
 void setLeds(int ledMode){
   switch(ledMode){
@@ -55,12 +62,6 @@ void setLeds(int ledMode){
   }
 }
 
-//This function is for sending data through I2C
-void I2CWrite(uint8_t data){
-  I2Channel.Write(8, data);
-  //This should print out what was sent through I2C
-  std::cout << "Wrote:" << data << endl;
-}
 
 void Robot::Autonomous() {
   
@@ -68,7 +69,26 @@ void Robot::Autonomous() {
 
 
 void Robot::OperatorControl() {
- 
+ if(stick0.GetRawButton(1)){
+	 setLeds(114); //red
+ }
+ else{
+	 setLeds(111);
+ }
+
+ if(stick0.GetRawButton(2)){
+	 setLeds(103); //green
+ }
+ else{
+	 setLeds(111);
+ }
+
+ if(stick0.GetRawButton(3)){
+	 setLeds(98); //blue
+ }
+ else {
+	 setLeds(111);
+ }
 }
 
 
